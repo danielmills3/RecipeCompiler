@@ -1,0 +1,74 @@
+<!--Following code is heavily inspired by https://www.youtube.com/watch?v=NxVCq4p0Kb0-->
+
+<!--HTML Form for ingredient input -->
+<form>
+	<div class="formBox">
+		<label for="name">Ingredient</label>
+		<input type="text" id="name" placeholder="Pasta">
+	</div>
+	<div class="formBox">
+		<label for="quantity">Quantity</label>
+		<input type="number" id="quantity" placeholder="16">
+	</div>
+	<div class="formBox">
+		<label for="unit">Unit</label>
+		<input type="text" id="unit" placeholder="oz">
+	</div>
+	<div class="formBox">
+		<button id="addBtn">Click to Add</button>
+    </div>
+    <div class="formBox">
+        <button id="clearBtn">Click to Clear Ingredients</button>
+    </div>
+    <div id="msg">
+        <pre></pre>
+    </div>
+</form>
+
+<script>
+    /*JS for processing ingredient form, creating an ingredient, 
+    and adding it to an array of ingredients*/
+    let ingredients = [];
+
+    // example {id:159230483049, name: 'Pasta', quantity: 16, unit: 'oz'}
+    const addIngredient = (ev)=>{
+        ev.preventDefault(); //to stop form from submitting and page refreshing
+        let ingredient = {
+            id: Date.now(),
+            name: document.getElementById('name').value,
+            quantity: document.getElementById('quantity').value,
+            unit: document.getElementById('unit').value
+        }
+        //add validation
+        ingredients.push(ingredient);
+        document.forms[0].reset();
+
+        //for display purposes only
+        console.warn('added', {ingredients} );
+        let pre = document.querySelector('#msg pre');
+        pre.textContent = '\n' + JSON.stringify(ingredients, '\t', 2);
+
+        //saving to localStorage
+        localStorage.setItem('MyIngredientList', JSON.stringify(ingredients));
+    }
+
+    const clearIngredients = (ev)=>{
+        ev.preventDefault(); //to stop form from submitting and page refreshing
+
+        //clear local storage
+        window.localStorage.clear();
+
+        //clear text from page 
+        let pre = document.querySelector('#msg pre');
+        pre.textContent = '';
+
+        //clear array
+        ingredients = [];
+    }
+
+    //make sure page is loaded before we try to run things on the page (?)
+    document.addEventListener('DOMContentLoaded', ()=>{
+        document.getElementById('addBtn').addEventListener('click', addIngredient);
+        document.getElementById('clearBtn').addEventListener('click', clearIngredients);
+    });
+</script>
