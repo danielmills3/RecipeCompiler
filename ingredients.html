@@ -21,7 +21,6 @@
         <button id="clearBtn">Click to Clear Ingredients</button>
     </div>
     <div id="msg">
-        <pre></pre>
     </div>
 </form>
 
@@ -30,7 +29,8 @@
     and adding it to an array of ingredients*/
     let ingredients = [];
 
-    // example {id:159230483049, name: 'Pasta', quantity: 16, unit: 'oz'}
+    /* Function for creating an ingredient
+    EX: example {id:159230483049, name: 'Pasta', quantity: 16, unit: 'oz'} */
     const addIngredient = (ev)=>{
         ev.preventDefault(); //to stop form from submitting and page refreshing
         let ingredient = {
@@ -43,28 +43,57 @@
         ingredients.push(ingredient);
         document.forms[0].reset();
 
-        //for display purposes only
+        //nest a <pre> in a <div> inside the existing <div id="msg">
         console.warn('added', {ingredients} );
-        let pre = document.querySelector('#msg pre');
-        pre.textContent = '\n' + JSON.stringify(ingredients, '\t', 2);
+        let output = document.querySelector('#msg');
+        let parent = document.createElement("div");
+        let child = document.createElement("pre");
+        parent.appendChild(child);
+        output.appendChild(parent);
+
+        //add data from new ingredient to child.  add button to child to change quantity
+        child.textContent = '\n' + JSON.stringify(ingredient, '\t', 2);
+        let button = document.createElement("Button");
+        button.setAttribute("id", ingredient.name + "Button");
+        button.innerHTML = "Change Quantity of " + ingredient.name;
+        child.appendChild(button);
+
+        //must change so will change quantity for ingredient where button is clicked
+        button.addEventListener('click', changeQuantity);
+
 
         //saving to localStorage
         localStorage.setItem('MyIngredientList', JSON.stringify(ingredients));
     }
 
+    //Function for clearing ingredients
     const clearIngredients = (ev)=>{
         ev.preventDefault(); //to stop form from submitting and page refreshing
+
+        //TODO: Add confirmation message before clearing ingredients
 
         //clear local storage
         window.localStorage.clear();
 
         //clear text from page 
-        let pre = document.querySelector('#msg pre');
+        let pre = document.querySelector('#msg');
         pre.textContent = '';
 
         //clear array
         ingredients = [];
     }
+
+    //Function for changing quantity of ingredient
+    const changeQuantity = (ev)=>{
+        ev.preventDefault(); //to stop form from submitting and page refreshing
+        let newQuantity = window.prompt("Enter new quantity for ingredient: ");
+
+        //TODO: //must change so will change quantity for ingredient where button is clicked
+        ingredients[0].quantity = newQuantity;
+
+        //must add entire array to local storage again after changing quantity
+        localStorage.setItem('MyIngredientList', JSON.stringify(ingredients));
+    } 
 
     //make sure page is loaded before we try to run things on the page (?)
     document.addEventListener('DOMContentLoaded', ()=>{
